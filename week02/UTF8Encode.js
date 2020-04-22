@@ -9,7 +9,6 @@ function str2utf8 (str) {
   if(!str||typeof str !== 'string') return []
   // 首先encodeURIComponent api对71个字符未做utf8编码处理 我们要自行对其进行编码
   const unencodeReg = /[!'()*\-._~0-9A-Za-z]/
-  const reg = /([!'()*\-._~0-9A-Za-z])|([^!'()*\-._~0-9A-Za-z])/g
   const ret = []
 
   Array.prototype.forEach.call(str, (item) => {
