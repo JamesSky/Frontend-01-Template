@@ -1,7 +1,9 @@
 function match (pattern, string) {
   let stateHandlers = []
+
   for (const p of pattern) {
     const len = stateHandlers.length
+
     if(!len){
       stateHandlers.push(
         function start(c) {
@@ -24,7 +26,9 @@ function match (pattern, string) {
     }
   }
   stateHandlers.push(function end(){return end})
+
   let state = stateHandlers[0]
+
   for (const c of string) {
     state = state(c)
   }
