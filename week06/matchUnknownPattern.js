@@ -1,3 +1,4 @@
+// 用状态机处理完全未知的 pattern
 function match (pattern, string) {
   let stateHandlers = []
 
@@ -23,4 +24,3 @@ function match (pattern, string) {
   }
   return state === stateHandlers[stateHandlers.length - 1]
 }
-console.log(match('xsdabcababx', 'aaaabcxsdabcababax'))
