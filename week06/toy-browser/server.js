@@ -19,9 +19,13 @@ const server = http.createServer((req, res) => {
     width:40px;
     background-color: #ff5000;
 } 
-html body div .img1{
+html body div img.img1{
     width:40px;
     background-color: #ff5000;
+} 
+html body div .img2{
+    width:400px;
+    background-color: blue;
 } 
 body div img.img2.img3#myid{
     width:50px;
