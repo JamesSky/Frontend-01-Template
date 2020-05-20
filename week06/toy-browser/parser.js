@@ -25,7 +25,14 @@ function match (element, selector) {
     }
   }else if (selector.charAt(0) === '.') {
     const attr = element.attributes.filter(attr => attr.name === 'class')[0]
-
+    if (attr) {
+      const classes = attr.value.split(' ')
+      for (let className of classes) {
+        if (className === selector.replace(".", '')) {
+          return true
+        }
+      }
+    }
     if (attr && attr.value === selector.replace('.', '')) {
       return true
     }

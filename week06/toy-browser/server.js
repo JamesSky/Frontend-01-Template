@@ -18,13 +18,21 @@ const server = http.createServer((req, res) => {
    div #myid{
     width:40px;
     background-color: #ff5000;
+} 
+html body div .img1{
+    width:40px;
+    background-color: #ff5000;
+} 
+body div .img2{
+    width:50px;
+    background-color: #ff5000;
 }
       </style>
   </head>
   <body>
       <div>
           <img id="myid"/>
-          <img />
+          <img class="img1 img2"/>
       </div>
   </body>
   </html>`);
