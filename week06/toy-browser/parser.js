@@ -8,7 +8,6 @@ let rules = []
 
 function addCSSRules (text) {
   const ast = css.parse(text)
-  // console.log(JSON.stringify(ast,null,'    '))
   rules.push(...ast.stylesheet.rules)
 }
 
@@ -16,43 +15,56 @@ function match (element, selector) {
   if (!element.attributes || !selector) {
     return false
   }
+  // 对复合选择器进行正则拆分 记录命中次数 命中次数与选择器长度相等才视为匹配
+  const regPattern = /(#[a-zA-Z]+[_a-zA-Z0-9-]*?)|(\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*)|([a-z]+)/g
+  const matched = selector.match(regPattern)
+  let matchTime = 0
 
-  if (selector.charAt(0) === '#') {
-    const attr = element.attributes.filter(attr => attr.name === 'id')[0]
+  for (const p of matched) {
+    if (p.charAt(0) === '#') {
+      const attr = element.attributes.filter(attr => attr.name === 'id')[0]
+  
+      if (attr && attr.value === p.replace('#', '')) {
+        matchTime++
+      }
+    }else if (p.charAt(0) === '.') {
+      const attr = element.attributes.filter(attr => attr.name === 'class')[0]
 
-    if (attr && attr.value === selector.replace('#', '')) {
-      return true
-    }
-  }else if (selector.charAt(0) === '.') {
-    const attr = element.attributes.filter(attr => attr.name === 'class')[0]
-    if (attr) {
-      const classes = attr.value.split(' ')
-      for (let className of classes) {
-        if (className === selector.replace(".", '')) {
-          return true
+      if (attr) {
+        const classes = attr.value.split(' ')
+
+        for (let className of classes) {
+          if (className === p.replace(".", '')) {
+            matchTime++
+          }
         }
       }
-    }
-    if (attr && attr.value === selector.replace('.', '')) {
-      return true
-    }
-  } else {
-    if (element.tagName === selector) {
-      return true
+    } else {
+      if (element.tagName === p) {
+        matchTime++
+      }
     }
   }
-  return false
+  
+  return matchTime === matched.length
 }
 function specificity (selector) {
   const p = [0, 0, 0, 0]
-  const selectorParts = selector.split(' ')
-  for (const part of selectorParts) {
-    if (part.charAt(0) === '#') {
-      p[1] += 1
-    }else if (part.charAt(0) === '.') {
-      p[2] += 1
-    }else {
-      p[3] += 1
+  // 这里用正则对id和class还有标签名进行了匹配  class 规则为可以以-开头 后边跟下划线任意字母之后是任意的_-字母数字
+  // id 为数字字母开头 不考虑输入中文状况(id中允许中文的一些字符) 
+  // 标签名小写字母
+  const regPattern = /(#[a-zA-Z]+[_a-zA-Z0-9-]*?)|(\.-?[_a-zA-Z]+[_a-zA-Z0-9-]*)|([a-z]+)/g
+  const selectorParts = selector.split(' ').map(item=>item.match(regPattern))
+  //
+  for (const parts of selectorParts) {
+    for (const part of parts) {
+      if (part.charAt(0) === '#') {
+        p[1] += 1
+      }else if (part.charAt(0) === '.') {
+        p[2] += 1
+      }else {
+        p[3] += 1
+      }
     }
   }
   return p
@@ -372,5 +384,6 @@ module.exports.parseHTML = function parseHTML (html) {
     state = state(c)
   }
   state = state(EOF)
+  console.log(stack);
   return stack
 }

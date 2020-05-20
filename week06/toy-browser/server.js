@@ -23,7 +23,7 @@ html body div .img1{
     width:40px;
     background-color: #ff5000;
 } 
-body div .img2{
+body div img.img2.img3#myid{
     width:50px;
     background-color: #ff5000;
 }
@@ -31,7 +31,7 @@ body div .img2{
   </head>
   <body>
       <div>
-          <img id="myid"/>
+          <img id="myid" class="img2 img3"/>
           <img class="img1 img2"/>
       </div>
   </body>
