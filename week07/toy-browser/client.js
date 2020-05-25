@@ -1,5 +1,5 @@
 const net = require('net')
-const parser = require('../domParse.js')
+const parser = require('./parser.js')
 class ResponseParser {
   constructor() {
     this.WAITING_STATUS_LINE = 0
