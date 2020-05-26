@@ -122,7 +122,6 @@ function computeCSS (element) {
           computedStyle[declaration.property].specificity = sp
         }
       }
-      console.log('ele', element.computedStyle)
     }
   }
 // console.log(rules)
@@ -386,6 +385,5 @@ module.exports.parseHTML = function parseHTML (html) {
     state = state(c)
   }
   state = state(EOF)
-  console.log(stack);
   return stack
 }

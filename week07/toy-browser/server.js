@@ -7,37 +7,38 @@ const server = http.createServer((req, res) => {
   res.end(`<html maaa=a >
   <head>
       <style>
-  body div #myid{
-      width:100px;
-      background-color: #ff5000;
-  }
-  body div img{
-      width:30px;
-      background-color: #ff1111;
-  }
-   div #myid{
-    width:40px;
-    background-color: #ff5000;
-} 
-html body div img.img1{
-    width:40px;
-    background-color: #ff5000;
-} 
-html body div{
-    display:flex;
-    width:400px;
-    background-color: blue;
-} 
-body div img.img2.img3#myid{
-    width:50px;
-    background-color: #ff5000;
-}
+      #container{
+          width:800px;
+          display:flex;
+      }
+        #container #myid {
+            width: 200px;
+          height:300px;
+          background-color: rgb(255,0,0);
+        }
+        #container .c1 {
+            flex:1;
+          height:300px;
+          background-color: rgb(255,255,0);
+        }
+        #container .c2 {
+          width:400px
+          height:300px;
+          background-color: rgb(255,0,255);
+        }
+        #container .c3 {
+          width:300px;
+          height:300px;
+          background-color: rgb(0,0,255);
+        }
       </style>
   </head>
   <body>
-      <div>
-          <img id="myid" class="img2 img3"/>
-          <img class="img1 img2"/>
+      <div id="container">
+          <div id="myid"></div>
+          <div class="c1"></div>
+          <div class="c2"></div>
+          <div class="c3"></div>
       </div>
   </body>
   </html>`);

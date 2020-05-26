@@ -1,5 +1,7 @@
 const net = require('net')
 const parser = require('./parser.js')
+const render = require('./render')
+const images = require('images')
 class ResponseParser {
   constructor() {
     this.WAITING_STATUS_LINE = 0
@@ -220,5 +222,7 @@ void async function () {
 
   let response = await request.send()
   let dom = parser.parseHTML(response.body)
-  console.dir(JSON.stringify(dom, null, '  '))
+  let viewport = images(800,600)
+  render(viewport,dom[0])
+  viewport.save('viewport.png')
 }()

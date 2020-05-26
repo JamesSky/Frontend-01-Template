@@ -4,9 +4,8 @@ function getStyle (element) {
   }
   // 遍历样式
   for (const prop in element.computedStyle) {
-    const p = element.computedStyle.value
     element.style[prop] = element.computedStyle[prop].value
-    // 这里我们只解析px作为单位的样式
+    // 这里我们只解析px或数字作为单位的样式
     if (element.style[prop].toString().match(/px$/)) {
       element.style[prop] = parseInt(element.style[prop])
     }
@@ -19,16 +18,16 @@ function getStyle (element) {
 
 function layout (element) {
   if (!element.computedStyle) return
-  // 只解析flex布局
+  // 只解析flex的元素
   const elementStyle = getStyle(element)
   if (elementStyle.display !== 'flex') return
   // 获取所有元素节点
   const items = element.children.filter(e => e.type === 'element')
-
+  // 元素排序
   items.sort((a, b) => (a.order || 0) - (b.order || 0))
 
   const style = elementStyle
-  // 这里只是为了给一些默认属性 如果你在HTML写的比较全也可以忽略这一段
+  // 这里只是为了给一些默认属性 如果在HTML写的比较全也可以忽略这一段
   ;['width', 'height'].forEach(size => {
     if (style[size] === 'auto' || style[size] === '') {
       style[size] = null
@@ -41,7 +40,7 @@ function layout (element) {
     style.alignItems = 'stretch'
   }
   if (!style.alignContent || style.alignContent === 'auto') {
-    style.alignItems = 'stretch'
+    style.alignContent = 'stretch'
   }
   if (!style.flexWrap || style.flexWrap === 'auto') {
     style.flexWrap = 'nowrap'
@@ -104,41 +103,42 @@ function layout (element) {
     crossStart = 'left'
     crossEnd = 'right'
   }
-  if (style.flexWrap === 'wrap-reverse') { [crossStart, crossEnd] = [crossEnd, crossStart]
+  if (style.flexWrap === 'wrap-reverse') { 
+    [crossStart, crossEnd] = [crossEnd, crossStart]
     crossSign = -1
   }else {
     crossBase = 0
     crossSign = +1
   }
 
-  let isAutoMainSize = false
-  if (!style[mainSize]) { // 自动大小
+  let isAutoMainSize = false 
+  if (!style[mainSize]) { // 父元素没设置主轴尺寸 那么自动大小
     elementStyle[mainSize] = 0
 
     for (const i = 0,len = items.length;i < len;i++) {
       const item = items[i]
-
+      const itemStyle = getStyle(item)
       if (itemStyle[mainSize] !== null || itemStyle[mainSize] !== undefined) {
-        elementStyle[mainSize] = elementStyle[mainSize] + itemStyle[mainSize]
+        elementStyle[mainSize] += itemStyle[mainSize]
       }
     }
     isAutoMainSize = true
   }
 
-  let flexLine = []
-  let flexLines = [flexLine]
-  let mainSpace = elementStyle[mainSize]
-  let crossSpace = 0
+  let flexLine = [] // 当前行
+  let flexLines = [flexLine] // 所有行 先将第一行存入
+  let mainSpace = elementStyle[mainSize] // 剩余空间
+  let crossSpace = 0 // 每一行在交叉轴所占空间
 
   for (let i = 0,len = items.length;i < len;i++) {
     const item = items[i]
     const itemStyle = getStyle(item)
 
-    if (itemStyle[mainSize] === null) { // 如果没指定在主轴上的单位 那么置为0
+    if (itemStyle[mainSize] === null) { // 如果没指定在主轴上的尺寸 那么置为0
       itemStyle[mainSize] = 0
     }
 
-    if (itemStyle.flex) { // 如果子元素指定了flex属性 直接加入当前行
+    if (itemStyle.flex) { // 如果子元素指定了flex属性 直接加入当前行 因为设置了flex以为这个元素可以伸缩
       flexLine.push(item)
     }else if (style.flexWrap === 'nowrap' && isAutoMainSize) { // 如果父元素的flexwrap为nowrap 即不换行 并且isAutoMainSize为true 那么父元素的剩余空间要减去子元素的宽度
       mainSpace -= itemStyle[mainSize]
@@ -156,7 +156,7 @@ function layout (element) {
       if (mainSpace < itemStyle[mainSize]) {
         flexLine.mainSpace = mainSpace
         flexLine.crossSpace = crossSpace
-        // 此时第一行结束 直接重置 开始第二行
+        // 此时本行结束 直接重置 开始下一行
         flexLine = []
         flexLines.push(flexLine)
         flexLine.push(item)
@@ -176,14 +176,14 @@ function layout (element) {
   }
   // 设置当前行剩余空间
   flexLine.mainSpace = mainSpace
-  // 如果flexwrap为不换行或者主轴空间自动大小 那么交叉轴的空间等于样式中设定的大小 否则按照元素在交叉轴的最大尺寸计算
+  // 如果flexwrap为不换行或者主轴空间自动大小 那么交叉轴的空间等于样式中设定的大小
   if (style.flexWrap === 'nowrap' || isAutoMainSize) {
     flexLine.crossSpace = (style[crossSize] !== undefined) ? style[crossSize] : crossSpace
   }else {
-    // 否则当前行在主轴的空间等于当前行中元素的最大高度
+    // 否则当前行在交叉轴的空间等于当前行中元素的最大高度
     flexLine.crossSpace = crossSpace
   }
-  // overflow 当父元素单行时,缩放所有子元素
+  // 若剩余空间为负数 所有flex元素为0 等比压缩剩余元素
   if (mainSpace < 0) {
     let scale = style[mainSize] / (style[mainSize] - mainSpace)
     let currentMain = mainBase
@@ -194,7 +194,7 @@ function layout (element) {
       if (itemStyle.flex) {
         itemStyle[mainSize] = 0
       }
-
+      // 计算元素在主轴的起始位置和结束位置
       itemStyle[mainSize] = itemStyle[mainSize] * scale
       itemStyle[mainStart] = currentMain
       itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize]
@@ -203,7 +203,7 @@ function layout (element) {
   }else {
     flexLines.forEach(items => {
       let mainSpace = items.mainSpace
-      let flexTotal = 0
+      let flexTotal = 0 // 计算flex总值
       for (let i = 0;i < items.length; i++) {
         let item = items[i]
         let itemStyle = getStyle(item)
@@ -213,7 +213,7 @@ function layout (element) {
           continue
         }
       }
-
+      // 如果有flex的元素 按元素的flex比例分配剩余空间
       if (flexTotal > 0) {
         let currentMain = mainBase
         for (let i = 0;i < items.length; i++) {
@@ -223,12 +223,14 @@ function layout (element) {
           if (itemStyle.flex) {
             itemStyle[mainSize] = (mainSpace / flexTotal) * itemStyle.flex
           }
+      // 计算元素在主轴的起始位置和结束位置
+
           itemStyle[mainStart] = currentMain
           itemStyle[mainEnd] = itemStyle[mainStart] + mainSign * itemStyle[mainSize]
           currentMain = itemStyle[mainEnd]
         }
       }else {
-        let currentMain,step
+        let currentMain,step // step表示元素间距
         if (style.justifyContent === 'flex-start') {
           currentMain = mainBase
           step = 0
@@ -259,18 +261,15 @@ function layout (element) {
       }
     })
   }
-  // 计算交叉轴的空间
+  // 计算交叉轴的尺寸 crossSpace
   // align-items align-self
-  crossSpace = 0
-
-  if (!style[crossSize]) {
-    // 自动尺寸
+  if (!style[crossSize]) { // 没写尺寸自动撑开
     crossSpace = 0
     elementStyle[crossSize] = 0
     for (let i = 0;i < flexLines.length;i++) {
       elementStyle[crossSize] = elementStyle[crossSize] + flexLines[i].crossSpace
     }
-  }else {
+  }else { // 有尺寸则设为元素的尺寸
     crossSpace = style[crossSize]
     for (let i = 0;i < flexLines.length; i++) {
       crossSpace -= flexLines.crossSpace
@@ -309,6 +308,7 @@ function layout (element) {
     step = 0
   }
   flexLines.forEach(items => {
+    // stretch时撑开交叉轴
     let lineCrossSize = style.alignContent === 'stretch' ?
       items.crossSpace + crossSpace / flexLines.length :
       items.crossSpace
@@ -344,7 +344,5 @@ function layout (element) {
     }
     crossBase += crossSign * (lineCrossSize + step)
   })
-  const itemsss = items
-  console.log(itemsss)
 }
 module.exports = layout
