@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="./match.js"></script>
+  <style>
+  </style>
+</head>
+
+<body>
+  <div id="zhangsandege">
+    <div class="a">
+      <div class="b">
+        <span></span>
+      </div>
+    </div>
+  </div>
+  <script>
+    console.assert(match('#zhangsandege .a .b', document.getElementsByClassName('b')[0]),'应该匹配')
+    console.log(match('#zhangsandege .a .b span', document.getElementsByClassName('b')[0]),'应该不匹配')
+  </script>
+</body>
+
+</html>
