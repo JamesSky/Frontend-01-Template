@@ -48,7 +48,6 @@ function match (selector, element) {
   if (!matchChild(selectorParts[0], element)) {
     return false
   }
-  console.log(elements)
 
   let matched = false
   let j = 1

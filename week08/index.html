@@ -20,7 +20,7 @@
   </div>
   <script>
     console.assert(match('#zhangsandege .a .b', document.getElementsByClassName('b')[0]),'应该匹配')
-    console.log(match('#zhangsandege .a .b span', document.getElementsByClassName('b')[0]),'应该不匹配')
+    console.assert(match('#zhangsandege .a .b span', document.getElementsByClassName('b')[0]),'应该不匹配')
   </script>
 </body>
 
