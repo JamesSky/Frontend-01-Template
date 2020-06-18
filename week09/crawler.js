@@ -807,7 +807,6 @@ let propertiesElements = []
 let iframe = document.createElement("iframe");
 document.body.innerHTML = ''
 document.body.appendChild(iframe);
-
 void async function(){
 
     for(let standard of standards) {
