@@ -1,0 +1,151 @@
+<script>
+  // 加入括号
+  const regexp = /([0-9]|(?:[1-9][0-9]*))|([ ]+)|([\r\n]+)|(\()|(\))|(\+)|(\-)|(\*)|(\/)/g
+  const dictionary = ['Number', 'Whitespace', 'LineTerminator', '(', ')', '+', '-', '*', '/']
+  let stack = [{
+      type: 'Expression',
+      children: []
+    }]
+
+  function* tokenize(source) {
+    let result = regexp.exec(source);
+    let lastIndex = 0;
+  
+    while (result) {
+      for (let i = 1; i < dictionary.length; i++) {
+        if (result[i]) {
+          yield {
+            value: result[i],
+            type: dictionary[i - 1]
+          }
+        }
+      }
+      lastIndex = regexp.lastIndex;
+      result = regexp.exec(source)
+    }
+    yield {
+      type: 'EOF'
+    }
+  }
+
+
+
+  function Expression(source) {
+    if (source.type === 'Number') {
+      stack.push({
+        type: 'AdditiveExrpession',
+        children: []
+      })
+      return AdditiveExrpession(source);
+    } else if (source.type === '(') {
+      stack.push({
+        type: 'PrimaryExpression',
+        children: []
+      })
+      return PrimaryExpression(source);
+    } else if (source.type === 'EOF') {
+      stack.push(source);
+    }
+    return Expression;
+  }
+
+  function PrimaryExpression(source) {
+    if (source.type === '(') {
+      return AdditiveExrpession;
+    } else if (source.type === ')') {
+      return MultiplicativeExpression(stack.pop());
+    } else if (source.type === 'Number') {
+      stack[stack.length - 1].children.push(source);
+      return MultiplicativeExpression(stack.pop());
+    }
+  }
+
+  function AdditiveExrpession(source) {
+    if (source.type === 'Number') {
+      stack.push({
+        type: 'MultiplicativeExpression',
+        children: []
+      });
+      return MultiplicativeExpression(source);
+    } else if (source.type === '(') {
+      stack.push({
+        type: 'MultiplicativeExpression',
+        children: []
+      })
+      return MultiplicativeExpression(source);
+    } else if (source.type === ')') {
+      const item = stack.pop();
+      stack[stack.length - 1].children.push(item);
+      return PrimaryExpression(source);
+    } else if (/[+-]/.test(source.type)) {
+      const item = stack.pop();
+      stack[stack.length - 1].children.push(item);
+      stack[stack.length - 1].children.push(source);
+    } else if (source.type === 'EOF') {
+      return Expression(source);
+    }
+    return AdditiveExrpession;
+  }
+
+  function MultiplicativeExpression(source) {
+    if (source.type === 'Number') {
+      stack.push({
+        type: 'PrimaryExpression',
+        children: []
+      });
+      return PrimaryExpression(source);
+    } else if (source.type === 'PrimaryExpression') {
+      stack[stack.length - 1].children.push(source);
+    } else if (source.type === '(') {
+      stack.push({
+        type: 'PrimaryExpression',
+        children: []
+      })
+      return PrimaryExpression(source);
+    } else if (source.type === ')') {
+      return AdditiveExrpession(source);
+    } else if (/[*/]/.test(source.type)) {
+      stack[stack.length - 1].children.push(source);
+    } else if (/[+-]/.test(source.type)) {
+      return AdditiveExrpession(source);
+    } else if (source.type === 'EOF') {
+      return AdditiveExrpession(source);
+    }
+    return MultiplicativeExpression;
+  }
+
+  function* generateAST(source) {
+    let state = Expression;
+    let token = null;
+    for (let t of tokenize(source)) {
+      yield {
+        stack,
+        token: t
+      };
+      if (t.type === 'Whitespace') continue;
+      if (t.type === 'LineTerminator') continue;
+      state = state(t);
+      token = t;
+    }
+
+    // yield {
+    //   stack,
+    //   token
+    // }
+    return stack[0];
+  }
+
+  void function () {
+    let k = 0;
+    let result = generateAST('(2 * 4 + ( 5 + 7 ) * 6)')
+    let next = result.next();
+    while (!next.done) {
+      let {
+        stack,
+        token
+      } = next.value;
+      next = result.next();
+    }
+    console.log(stack)
+  }()
+</script>
