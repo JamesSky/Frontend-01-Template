@@ -29,18 +29,32 @@
 
 <script>
   const dragEle = document.querySelector('#draggable')
+
+  function throttle(fn, duration) {
+    let lastTime = null
+    return (...arg) => {
+      if (!lastTime || new Date().getTime() - lastTime > duration) {
+        lastTime = new Date().getTime()
+        console.log(lastTime)
+        return fn(...arg)
+      }
+    }
+  }
   // let endX = endY = 0
   dragEle.addEventListener('mousedown', e => {
-
+    let throttleNearest = throttle(nearest, 200)
     // const disX = e.clientX
     // const disY = e.clientY
 
     function mousemoveHandler(e) {
-      const range = nearest(e.clientX, e.clientY)
+      const range = throttleNearest(e.clientX, e.clientY)
+      if(!range) return
+      console.log(range)
       // const y = endY + e.clientY - disY + 'px'
       // const x = endX + e.clientX - disX + 'px'
 
       range.insertNode(dragEle)
+      console.log(range)
       // dragEle.style.transform = `translate(${x},${y})`
     }
 
@@ -65,19 +79,22 @@
   }
 
   function nearest(x0, y0) {
-      let nearestRange = null
-      let distance = Infinity
+    let nearestRange = null
+    let distance = Infinity
 
-      for (const range of ranges) {
-        let {x, y} = range.getBoundingClientRect()
-        let d = (x0 - x) ** 2 + (y0 - y) ** 2
+    for (const range of ranges) {
+      let {
+        x,
+        y
+      } = range.getBoundingClientRect()
+      let d = (x0 - x) ** 2 + (y0 - y) ** 2
 
-        if(d<distance){
-          distance = d
-          nearestRange = range
-        }
+      if (d < distance) {
+        distance = d
+        nearestRange = range
       }
-      return nearestRange
     }
-    document.addEventListener('selectstart', e => e.preventDefault())
+    return nearestRange
+  }
+  document.addEventListener('selectstart', e => e.preventDefault())
 </script>

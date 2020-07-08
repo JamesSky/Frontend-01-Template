@@ -19,3 +19,39 @@
   - 可以在HTML更改的都是Attribute
 ### 组件状态如何设计
 ![组件状态如何设计](./comp.png)
+
+### 轮播组件设计
+- Carousel
+  - state
+    - activeIndex
+  - property
+    - loop
+    - autoplay
+    - data
+    - duration
+    - forward
+    - color
+  - attribute
+    - startIndex
+    - loop
+    - autoplay
+    - duration
+    - forward
+    - color
+  - children
+    - CarouselItem
+  - event
+    - click
+    - change
+    - mouseover
+    - swipe
+  - method
+    - goto
+    - next
+    - prev
+    - play
+    - stop
+  - config
+    - mode:
+      - useRAF
+      - useTimeout
