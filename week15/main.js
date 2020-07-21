@@ -1,6 +1,6 @@
 import { Wrapper, Text, create } from './createElement'
-import {Carousel} from './carousel.view'
-/* 
+// import {Carousel} from './carousel.view'
+
 class Carousel {
   constructor () {
     this.position = 0
@@ -148,7 +148,7 @@ class Carousel {
               })}
            </div>
   }
-} */
+}
 
 let data = [
   'https://static001.geekbang.org/resource/image/bb/21/bb38fb7c1073eaee1755f81131f11d21.jpg',

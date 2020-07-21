@@ -1,0 +1,28 @@
+<style>
+*{
+  margin: 0;
+  padding: 0;
+}
+  #el {
+    width: 100px;
+    height: 100px;
+    background-color: lightblue;
+  }
+</style>
+<div id="el"></div>
+<script type="module">
+  import {Animation, Timeline} from './animation.js'
+  let el = document.getElementById('el')
+  let tl = new Timeline
+  
+  tl.add(new Animation({
+    element:el.style,
+    property: 'transform',
+    start:0,
+    end:200,
+    template: v =>`translateX(${v}px)`,
+    duration:5000,
+    delay:0,
+  }))
+  tl.start()
+</script>
