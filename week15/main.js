@@ -1,5 +1,6 @@
 import { Wrapper, Text, create } from './createElement'
-import {carousel} from './carousel.view'
+import {Carousel} from './carousel.view'
+/* 
 class Carousel {
   constructor () {
     this.position = 0
@@ -147,7 +148,7 @@ class Carousel {
               })}
            </div>
   }
-}
+} */
 
 let data = [
   'https://static001.geekbang.org/resource/image/bb/21/bb38fb7c1073eaee1755f81131f11d21.jpg',
@@ -158,4 +159,5 @@ let data = [
 let component = <Carousel data={data} duration={2000} autoplay>
                 </Carousel>
 component.mountTo(document.body)
-console.log(component)
+// console.log(component.render(),'render')
+// console.log(create('div',{class:'cls'}))

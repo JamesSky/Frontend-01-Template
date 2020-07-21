@@ -1,4 +1,7 @@
 <template>
+  <div class="cls" id="123">
+  <img src="https://www.baidu.com"/>
+  </div>
 </template>
 <script>
 export default {
