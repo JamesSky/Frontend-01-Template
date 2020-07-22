@@ -16,7 +16,7 @@ module.exports = {
             presets: ['@babel/preset-env'],
             plugins: [['@babel/plugin-transform-react-jsx',{
               pragma: 'create'
-            }]]
+            }],'@babel/plugin-proposal-class-properties']
           }
         }
       },
