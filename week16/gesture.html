@@ -1,0 +1,15 @@
+<body>
+<div style="transform: translateX(0,0);"></div>
+</body>
+
+<script src="./gesture.js"></script>
+<script>
+  document.addEventListener('contextmenu', e => e.preventDefault())
+  document.addEventListener('selectstart', e => e.preventDefault())
+  document.addEventListener('touchmove', e => e.preventDefault(), {
+    passive: false
+  })
+enableGesture(document.body)
+document.body.addEventListener('tap', e => console.log('呗tap'))
+let x = 0, y = 0
+</script>
