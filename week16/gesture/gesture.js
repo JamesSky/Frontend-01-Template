@@ -66,8 +66,8 @@ export function enableGesture(element) {
           clientY: point.clientY,
         },
       })
-    );
-
+    )
+    
     ctx.timeoutHandler = setTimeout(() => {
       if (ctx.isPan) return;
 
@@ -82,7 +82,7 @@ export function enableGesture(element) {
   let move = (point, ctx) => {
     let dx = point.clientX - ctx.startX;
     let dy = point.clientY - ctx.startY;
-    
+
     ctx.moves.push({
       dx,
       dy,

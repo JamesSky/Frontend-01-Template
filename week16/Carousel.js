@@ -24,7 +24,7 @@ export class Carousel {
     render.mountTo(parent)
 
     this.autoplay && this.loop()
-    // this.listenDrag()
+  // this.listenDrag()
   }
   loop () {
     let run = () => {
@@ -52,7 +52,7 @@ export class Carousel {
       property: 'transform',
       start: -100 * this.position,
       end: -100 - 100 * this.position,
-      template: v => `translateX(${v}%)`,
+      template: v => `translateX(${5*v}px)`,
       duration: 1000,
       timingFunction: ease
     })
@@ -61,7 +61,7 @@ export class Carousel {
       property: 'transform',
       start: 100 - 100 * nextPosition,
       end: -100 * nextPosition,
-      template: v => `translateX(${v}%)`,
+      template: v => `translateX(${5*v}px)`,
       duration: 1000,
       timingFunction: ease
     })
@@ -70,97 +70,100 @@ export class Carousel {
     this.timeline.add(nextAnimation)
     this.position = nextPosition
   }
-  // 上一张只可能是通过拖拽
-  prev () {
-    let prevPosition = (this.position - 1 + this.data.length) % this.data.length
-    let current = this.root.children[this.position]
-    let prev = this.root.children[prevPosition]
-
-    current.style.transition = 'ease 0.5s'
-    prev.style.transition = 'ease 0.5s'
-
-    current.style.transform = `translateX(${100 - 100 * this.position}%)`
-    prev.style.transform = `translateX(${ -100 * prevPosition}%)`
-
-    this.position = prevPosition
-  }
-  listenDrag () {
-    this.root.addEventListener('mousedown', e => {
-      const startX = e.clientX
-      const width = this.root.offsetWidth
-
-
-      // debugger
-     
-
-      current.style.transition = 'ease 0s'
-      prev.style.transition = 'ease 0s'
-      next.style.transition = 'ease 0s'
-
-      current.style.transform = `translateX(${-width * this.position}px)`
-      prev.style.transform = `translateX(${-width - width * prevPosition}px)`
-      next.style.transform = `translateX(${width - width * nextPosition}px)`
-
-      let mousemoveHandler = e => {
-        const offset = e.clientX - startX > width / 2 ? width / 2 :
-          e.clientX - startX < -width / 2 ? -width / 2 : e.clientX - startX
-
-        current.style.transform = `translateX(${offset - width * this.position}px)`
-        prev.style.transform = `translateX(${offset - width - width * prevPosition}px)`
-        next.style.transform = `translateX(${offset + width - width * nextPosition}px)`
-      }
-
-      let mouseupHandler = e => {
-        let dirEnum = {
-          left: 1,
-          right: 2
-        }
-        const offset = e.clientX - startX
-
-        let dir
-        offset > 100 && (dir = dirEnum.left)
-        offset < -100 && (dir = dirEnum.right)
-
-        if (!dir) {
-          current.style.transition = 'ease .5s'
-          prev.style.transition = 'ease .5s'
-          next.style.transition = 'ease .5s'
-
-          current.style.transform = `translateX(${-width * this.position}px)`
-          prev.style.transform = `translateX(${-width - width * prevPosition}px)`
-          next.style.transform = `translateX(${width - width * nextPosition}px)`
-        } else {
-          dir === dirEnum.right && this.next(true)
-          dir === dirEnum.left && this.prev()
-        }
-
-        document.removeEventListener('mouseup', mouseupHandler)
-        document.removeEventListener('mousemove', mousemoveHandler)
-      }
-
-      document.addEventListener('mouseup', mouseupHandler)
-      document.addEventListener('mousemove', mousemoveHandler)
-    })
-  }
   render () {
     return <div class='carousel'>
-             {this.data.map((url,currentPosition) => {
-
+             {this.data.map((url, currentPosition) => {
+                let offset
+                let reg = /translateX\(([\s\S]+)px\)/
+                let prevPosition = (currentPosition - 1 + this.data.length) % this.data.length
+                let nextPosition = (currentPosition + 1) % this.data.length
+              
                 const onStart = () => {
                   this.timeline.pause()
+                  this.stop()              
+              
+                  let current = this.root.children[currentPosition]
+                  let currentTransformValue = current.style.transform.match(reg) ? +current.style.transform.match(reg)[1] : 0
+              
+                  offset = currentTransformValue + 500 * currentPosition
                 }
-
+              
                 const onPan = e => {
-                  let prevPosition = (currentPosition - 1 + this.data.length) % this.data.length
-                  let nextPosition = (currentPosition + 1) % this.data.length
-
+                  e = e.detail
+              
                   let current = this.root.children[currentPosition]
                   let prev = this.root.children[prevPosition]
                   let next = this.root.children[nextPosition]
-
-                  console.log(current.style.transform)
+              
+                  let dx = e.clientX - e.startX
+                  let currentTransformValue = - 500 * currentPosition + offset + dx
+                  let prevTransformValue = -500 - 500 * prevPosition + offset + dx
+                  let nextTransformValue = 500 - 500 * nextPosition + offset + dx
+              
+              
+                  current.style.transform = `translateX(${currentTransformValue}px)`
+                  prev.style.transform = `translateX(${prevTransformValue}px)`
+                  next.style.transform = `translateX(${nextTransformValue}px)`
                 }
-                const item = <img src={url} onPan={onPan} onPressend={()=> this.timeline.resume()} onPanend={onStart} alt='carouselItem' enableGesture={enableGesture} class='carousel-item' />
+              
+                const onPanend = e => {
+                  e = e.detail
+              
+                  let direction = 0
+                  const dx = e.clientX - e.startX
+              
+                  ;(dx + offset) > 250 && (direction = 1)
+                  ;(dx + offset) < -250 && (direction = -1)
+              
+                  let current = this.root.children[currentPosition]
+                  let prev = this.root.children[prevPosition]
+                  let next = this.root.children[nextPosition]
+              
+              
+                  let currentAnimation = new Animation({
+                    element: current.style,
+                    property: 'transform',
+                    start: - 500 * currentPosition + offset + dx,
+                    end: - 500 * currentPosition + direction * 500,
+                    template: v => `translateX(${v}px)`,
+                    duration: 1000,
+                    timingFunction: ease
+                  })
+                  let prevAnimation = new Animation({
+                    element: prev.style,
+                    property: 'transform',
+                    start: -500 - 500 * prevPosition + offset + dx,
+                    end: -500 - 500 * prevPosition + direction * 500,
+                    template: v => `translateX(${v}px)`,
+                    duration: 1000,
+                    timingFunction: ease
+                  })
+                  let nextAnimation = new Animation({
+                    element: next.style,
+                    property: 'transform',
+                    start: 500 - 500 * nextPosition + offset + dx,
+                    end: 500 - 500 * nextPosition + direction * 500,
+                    template: v => `translateX(${5*v}px)`,
+                    duration: 1000,
+                    timingFunction: ease
+                  })
+                  this.timeline.reset()
+                  this.timeline.start()
+              
+                  this.timeline.add(currentAnimation)
+                  this.timeline.add(prevAnimation)
+                  this.timeline.add(nextAnimation)
+
+                  this.loop()
+                }
+              
+                const item = <img
+                               src={url}
+                               onPan={onPan}
+                               onPanend={onPanend}
+                               onStart={onStart}
+                               enableGesture={enableGesture}
+                               class='carousel-item' />
                 item.addEventListener('dragstart', e => e.preventDefault())
               
                 return item
