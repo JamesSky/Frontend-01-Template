@@ -80,7 +80,7 @@ export class Carousel {
               
                 const onStart = () => {
                   this.timeline.pause()
-                  this.stop()              
+                  this.stop()
               
                   let current = this.root.children[currentPosition]
                   let currentTransformValue = current.style.transform.match(reg) ? +current.style.transform.match(reg)[1] : 0
@@ -112,8 +112,14 @@ export class Carousel {
                   let direction = 0
                   const dx = e.clientX - e.startX
               
-                  ;(dx + offset) > 250 && (direction = 1)
-                  ;(dx + offset) < -250 && (direction = -1)
+                  if (e.isFlick) {
+                    dx > 0 && (direction = 1)
+                    dx < 0 && (direction = -1)
+                  }else {
+                    (dx + offset) > 250 && (direction = 1)
+                    ;(dx + offset) < -250 && (direction = -1)
+                  }
+              
               
                   let current = this.root.children[currentPosition]
                   let prev = this.root.children[prevPosition]
@@ -149,16 +155,16 @@ export class Carousel {
                   })
                   this.timeline.reset()
                   this.timeline.start()
-                  
-                  this.position = (this.position - direction + this.data.length) % this.data.length 
-
+              
+                  this.position = (this.position - direction + this.data.length) % this.data.length
+              
                   this.timeline.add(currentAnimation)
                   this.timeline.add(prevAnimation)
                   this.timeline.add(nextAnimation)
-
+              
                   this.loop()
                 }
-                
+              
               
                 const item = <img
                                src={url}
