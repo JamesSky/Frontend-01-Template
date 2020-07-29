@@ -143,19 +143,22 @@ export class Carousel {
                     property: 'transform',
                     start: 500 - 500 * nextPosition + offset + dx,
                     end: 500 - 500 * nextPosition + direction * 500,
-                    template: v => `translateX(${5*v}px)`,
+                    template: v => `translateX(${v}px)`,
                     duration: 1000,
                     timingFunction: ease
                   })
                   this.timeline.reset()
                   this.timeline.start()
-              
+                  
+                  this.position = (this.position - direction + this.data.length) % this.data.length 
+
                   this.timeline.add(currentAnimation)
                   this.timeline.add(prevAnimation)
                   this.timeline.add(nextAnimation)
 
                   this.loop()
                 }
+                
               
                 const item = <img
                                src={url}
