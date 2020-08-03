@@ -42,7 +42,7 @@ export class Carousel {
 
     let current = this.root.children[this.position]
     let next = this.root.children[nextPosition]
-    
+
     current.style.zIndex = 2
     next.style.zIndex = 1
 
@@ -163,13 +163,14 @@ export class Carousel {
         this.loop()
       }
     
-      const item = <img
-                     src={child.src}
+      const item = <div
                      onPan={onPan}
                      onPanend={onPanend}
                      onStart={onStart}
                      enableGesture={enableGesture}
-                     class='carousel-item' />
+                     class='carousel-item' >
+                     {child}
+                     </div>
       item.addEventListener('dragstart', e => e.preventDefault())
     
       return item
