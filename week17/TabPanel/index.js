@@ -1,4 +1,4 @@
-import { create } from './createElement'
+import { create } from '../createElement'
 export class TabPanel {
   constructor () {
     this.position = 0
@@ -9,7 +9,7 @@ export class TabPanel {
   setAttribute (name, value) {
     this.attributes.set(name, value)
   }
-  getAttribute(name){
+  getAttribute (name) {
     return this[name]
   }
   appendChild (child) {
@@ -33,20 +33,20 @@ export class TabPanel {
     this.titleViews[index].classList.add('selected')
   }
   render () {
-    this.childViews = this.children.map(child => <div>
-                                                  {child}
-                                                </div>
-                                                )
-    this.titleViews = this.children.map((child, index) => <span onClick={() => this.select(index)} style="margin:10px;">
-      {child.getAttribute('title')}
-    </span>
+    this.childViews = this.children.map(child => <div class='panel-item'>
+                                                   {child}
+                                                 </div>
+    )
+    this.titleViews = this.children.map((child, index) => <span onClick={() => this.select(index)} style='margin-right:10px;'>{child.getAttribute('title')}</span>
     )
     setTimeout(() => {
-        this.select(3)
-    }, 16);
+      this.select(3)
+    }, 16)
     return <div class='panel'>
-             {this.titleViews}
-             <div>
+             <div class='panel-title'>
+               {this.titleViews}
+             </div>
+             <div class='panel-body'>
                {this.childViews}
              </div>
            </div>

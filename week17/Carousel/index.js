@@ -1,7 +1,9 @@
-import { create } from './createElement'
-import { Timeline, Animation } from './animation/animation.js'
-import { ease } from './animation/timingFunctions.js'
-import { enableGesture } from './gesture/gesture'
+import { create } from '../createElement'
+import { Timeline, Animation } from '../animation/animation.js'
+import { ease } from '../animation/timingFunctions.js'
+import { enableGesture } from '../gesture/gesture'
+import css from  './index.css'
+
 export class Carousel {
   constructor () {
     this.position = 0

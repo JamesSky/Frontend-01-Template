@@ -9,6 +9,12 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.css$/,
+        use:{
+          loader: require.resolve('./css-loader.js')
+        }
+      },
+      {
         test: /\.js$/,
         use: {
           loader: 'babel-loader',
