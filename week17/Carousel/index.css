@@ -12,6 +12,7 @@
   padding: 10px;
   min-width: 500px;
   min-height: 300px;
+  background: #fff;
   transform: translateX(0px);
 }
 .carousel-item img{

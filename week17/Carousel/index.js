@@ -3,29 +3,51 @@ import { Timeline, Animation } from '../animation/animation.js'
 import { ease } from '../animation/timingFunctions.js'
 import { enableGesture } from '../gesture/gesture'
 import css from  './index.css'
-
+window.create = create
 export class Carousel {
   constructor () {
     this.position = 0
-    this.children = []
-    this.root = null
-    this.timer = null
     this.timeline = new Timeline
     this.timeline.start()
+    this.children = []
+    this.parent = null
+    this.root = null
+    this.timer = null
+    
   }
   setAttribute (name, value) {
     this[name] = value
   }
-  appendChild (child) {
-    this.children.push(child)
-  }
+
   mountTo (parent) {
     const render = this.render()
-
     this.root = render.root
+    this.parent = parent
     render.mountTo(parent)
 
     this.loop()
+  }
+  reRender(){
+    if(!this.parent) return
+    clearTimeout(this.timer)
+    this.timeline.reset()
+    this.position = 0
+    const render = this.render()
+    this.parent.removeChild(this.root)
+
+    this.root = render.root
+    render.mountTo(this.parent)
+    this.loop()
+  }
+  appendChild(child){
+    this.children.push(child)
+    this.reRender()
+  }
+  removeChild(index){
+    if(index>=this.children.length) return
+
+    this.children.splice(index,1)
+    this.reRender()
   }
   loop () {
     let run = () => {
@@ -177,6 +199,7 @@ export class Carousel {
     
       return item
     })
+
     return <div class='carousel'>
              {childViews}
            </div>
