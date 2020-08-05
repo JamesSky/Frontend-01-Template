@@ -1,0 +1,9 @@
+{
+  "devDependencies": {
+    "react": "*"
+  },
+  "dependencies": {
+    "jquery": "*",
+    "react": "*"
+  }
+}
