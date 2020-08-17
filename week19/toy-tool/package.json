@@ -1,0 +1,13 @@
+{
+  "name": "generator-toy-tool",
+  "version": "1.0.0",
+  "author": "skel",
+  "main": "index.js",
+  "license": "MIT",
+  "files": [
+    "app"
+  ],
+  "devDependencies": {
+    "yeoman-generator": "^4.11.0"
+  }
+}
