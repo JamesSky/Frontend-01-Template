@@ -1,10 +1,8 @@
 const http = require('http')
 // const querystring = require('querystring')
-const child_process = require('child_process')
+const childProcess = require('child_process')
 const fs = require('fs')
-const path = require('path')
 const archiver = require('archiver')
-// const filename = path.resolve(__dirname + '/package.zip')
 const packname = __dirname + '/package'
 
 const scope = encodeURIComponent('read:user')
@@ -13,7 +11,7 @@ const clientId = 'Iv1.c30bfc37dff054c7'
 const redirectUri = encodeURIComponent('http://localhost:3000/auth?id=123')
 const url = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=${scope}&state=${state}`
 
-child_process.exec(`open ${url}`)
+childProcess.exec(`open ${url}`)
 
 const server = http.createServer((req, res) => {
   console.log(req.url)
