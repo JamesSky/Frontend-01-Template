@@ -1,0 +1,20 @@
+https://github.com/login/oauth/authorize?client_id=Iv1.c30bfc37dff054c7&redirect_uri=http%3A%2F%2Flocalhost%3A8000&scope=read%3Auser&state=123abc
+
+let code = "3858a235557e4662cdbb"
+let state = "123abc"
+let client_id = "Iv1.c30bfc37dff054c7"
+let client_secret = "4d723ba7c1994a2109ef71d36ac284fff805d4c2"
+let redirect_uri = "http%3A%2F%2Flocalhost%3A8000"
+let data = `code=${code}&state=${state}&client_secret=${client_secret}&redirect_uri=${redirect_uri}&client_id=${client_id}`
+
+let xhr = new XMLHttpRequest
+
+xhr.open('GET', 'https://api.github.com/user', true)
+xhr.setRequestHeader('Authorization','token 061f960ada34105c59968301d88dda3b36f3b90a')
+xhr.send(null)
+
+xhr.addEventListener('readystatechange', (e)=>{
+  if(this.readyState === 4){
+    console.log(e.responseText)
+  }
+})
